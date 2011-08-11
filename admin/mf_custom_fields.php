@@ -377,7 +377,7 @@ class mf_custom_fields extends mf_admin {
           'class'       => "{validate:{required:true,messages:{required:'". __('This Field is required',$mf_domain)."'}}}",
           'div_class'   => 'form-requierd'
         ),
-        'requiered_field'    =>  array(
+        'required_field'    =>  array(
           'type'        =>  'checkbox',
           'label'       =>  __('required',$mf_domain),
           'name'        =>  'mf_field[core][requiered_field]',
