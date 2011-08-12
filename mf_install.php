@@ -24,7 +24,7 @@ class mf_install {
       description text,
       arguments text,
       active tinyint(1) DEFAULT 1,
-      UNIQUE KEY id (id) ) $charset_collate
+      PRIMARY KEY id (id) ) $charset_collate
     ";
     dbDelta($sql);
 
