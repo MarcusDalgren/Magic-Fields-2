@@ -41,6 +41,10 @@ class mf_register{
           $option['taxonomies'][] = $k;
         }
       }
+      
+      if($option['has_archive'] && $option['has_archive_slug'])
+        $option['has_archive'] = $option['has_archive_slug'];
+      
  
       if($option['rewrite'] && $option['rewrite_slug'])
         $option['rewrite'] = array( 'slug' => $option['rewrite_slug'],'with_front' => true );
@@ -66,7 +70,7 @@ class mf_register{
       register_post_type($name,$option);
      
     }
-    
+    flush_rewrite_rules(false);
   }
 
   public function _get_cap($name){

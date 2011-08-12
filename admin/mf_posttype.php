@@ -158,7 +158,15 @@ class mf_posttype extends mf_admin {
           'label' => __( 'Has archive', $mf_domain ),
           'name' => 'mf_posttype[option][has_archive]',
           'value' => 0,
-          'description' => __( 'Enables post type archives. Will use string as archive slug. Will generate the proper rewrite rules if rewrite is enabled.', $mf_domain )
+          'description' => __( 'Enables post type archives. Enter archive slug below. Will generate the proper rewrite rules if rewrite is enabled.', $mf_domain )
+        ),
+        'has_archive_slug' => array(
+          'id' => 'posttype-has-archive-slug',
+          'type' => 'text',
+          'label' => __( 'Archive slug', $mf_domain ),
+          'name' => 'mf_posttype[option][has_archive_slug]',
+          'value' => '',
+          'description' => __( 'Archive slug. The archive for the post type can be viewed at this slug. Has archives must be checked for this to work.', $mf_domain )
         ),
 		'rewrite' => array(
           'id' => 'posttype-rewrite',
