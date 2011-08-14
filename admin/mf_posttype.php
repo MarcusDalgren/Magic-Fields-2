@@ -524,7 +524,7 @@ class mf_posttype extends mf_admin {
    * Save a Post Type
    */
   public function save_post_type () {
-    global $mf_domain;
+    global $mf_domain, $mf_register, $wp_rewrite;
 
     //checking the nonce
     check_admin_referer('form_post_type_posttype');
@@ -548,9 +548,13 @@ class mf_posttype extends mf_admin {
         $this->_add_cap($name);
       }
     }
-    $this->mf_redirect(null,null,array('message' => 'success'));
+    $this->mf_redirect("mf_posttype","update_rewrite");
   }
 
+  public function update_rewrite() {
+    flush_rewrite_rules(false);
+    $this->mf_redirect(null,null,array('message' => 'success'));
+  }
   /**
    * Add a news Capabilities for Administrator
    *

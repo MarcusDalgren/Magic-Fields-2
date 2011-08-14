@@ -7,19 +7,15 @@ class mf_register{
   public $name = 'mf_register';
   
   function __construct(){
-    add_action('init', array( &$this, 'mf_register_custom_taxonomies' ) );
-    add_action('init', array( &$this, 'mf_register_post_types' ) );
-    
+    add_action('init', array( $this, 'mf_register_custom_taxonomies' ) );
+    add_action('init', array( $this, 'mf_register_post_types' ) );
   }
 
   // register post type
-  public function mf_register_post_types(){
-    global $mf_pt_register;
-
-    $post_types = $this->_get_post_types();
+  public function mf_register_post_type($p) {
+      global $mf_pt_register;
     
-    foreach($post_types as $p){
-      $p = unserialize($p['arguments']);
+      $p = maybe_unserialize($p);
 
       $name = $p['core']['type'];
       $option = $p['option'];
@@ -45,7 +41,8 @@ class mf_register{
       if($option['has_archive'] && $option['has_archive_slug'])
         $option['has_archive'] = $option['has_archive_slug'];
       
- 
+      unset($option['has_archive_slug']);
+
       if($option['rewrite'] && $option['rewrite_slug'])
         $option['rewrite'] = array( 'slug' => $option['rewrite_slug'],'with_front' => true );
 
@@ -67,10 +64,18 @@ class mf_register{
       
       //description
       $option['description'] = $p['core']['description'];
-      register_post_type($name,$option);
-     
+      return register_post_type($name,$option);  	
+  }
+
+  // register post types
+  public function mf_register_post_types(){
+
+    $post_types = $this->_get_post_types();
+    
+    foreach($post_types as $p){
+      // This is for potential error handling. Will return WP_Error if something goes wrong.
+      $post_type = $this->mf_register_post_type($p['arguments']);
     }
-    flush_rewrite_rules(false);
   }
 
   public function _get_cap($name){
