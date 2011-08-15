@@ -94,7 +94,7 @@ class mf_register{
   }
 
   public function mf_register_custom_taxonomies(){
-
+    global $mf_tax_register;
     $taxonomies = $this->_get_custom_taxonomies();
     foreach($taxonomies as $tax){
       $tax = unserialize($tax['arguments']);
@@ -115,6 +115,7 @@ class mf_register{
         $option['rewrite'] = array( 'slug' => $option['rewrite_slug'] );
 
       unset($option['rewrite_slug']);
+      $mf_tax_register[] = $name;
       register_taxonomy($name,$in, $option);
     }
 

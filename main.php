@@ -28,9 +28,10 @@ License: GPL2
 /**
  * i18n
  */ 
-global $mf_domain,$mf_pt_register;
+global $mf_domain,$mf_pt_register, $mf_tax_register;
 $mf_domain = 'magic_fields';
 $mf_pt_register = array();
+$mf_tax_register = array();
 
 /**
  * Constants

@@ -14,7 +14,7 @@ class mf_dashboard extends mf_admin {
   }
 
   function main() {
-    global $mf_domain,$mf_pt_register;
+    global $mf_domain,$mf_pt_register,$mf_tax_register;
     
     $posttypes = $this->mf_get_post_types();
     $custom_taxonomies = $this->get_custom_taxonomies();
@@ -64,8 +64,8 @@ class mf_dashboard extends mf_admin {
                   $link = wp_nonce_url($link,"delete_post_type_mf_posttype");
                 ?> 
                 <a class="mf_confirm" alt="<?php _e("This action can't be undone, are you sure?", $mf_domain )?>"  href="<?php print $link;?>">Delete</a> 
-                 <?php endif; ?>
               </span>
+              <?php endif; ?>
             </div>
           </td>
           <td><?php echo $pt->name; ?></td>
@@ -109,26 +109,28 @@ class mf_dashboard extends mf_admin {
              foreach($custom_taxonomies as $tax):
              $alternate = ($counter % 2 ) ? "alternate" : "";
              $counter++;
-             $tmp = unserialize($tax['arguments']);
+             //$tmp = unserialize($tax['arguments']);
           ?>
         <tr class="<?php print $alternate;?> iedit">
           <td>
-            <strong><?php echo $tax['name']; ?></strong> <small>( <?php echo $tmp['label']['menu_name']; ?> )</small>
+            <strong><?php echo $tax->label; ?></strong> <small>( <?php echo $tax->labels->menu_name; ?> )</small>
             <div class="row-actions">
+              <?php if (in_array($tax->name,$mf_tax_register)): ?>
               <span class="edit"> 
-                <a href="admin.php?page=mf_dispatcher&mf_section=mf_custom_taxonomy&mf_action=edit_custom_taxonomy&custom_taxonomy_id=<?php echo $tax['id']; ?>">Edit Custom Taxonomy</a> |
+                <a href="admin.php?page=mf_dispatcher&mf_section=mf_custom_taxonomy&mf_action=edit_custom_taxonomy&taxonomy=<?php echo $tax->name; ?>">Edit Custom Taxonomy</a> |
               </span>
               <span class="delete">
                 <?php 
-                  $link = "admin.php?page=mf_dispatcher&init=true&mf_section=mf_custom_taxonomy&mf_action=delete_custom_taxonomy&custom_taxonomy_id={$tax['id']}";
+                  $link = "admin.php?page=mf_dispatcher&init=true&mf_section=mf_custom_taxonomy&mf_action=delete_custom_taxonomy&taxonomy={$tax->name}";
                   $link = wp_nonce_url($link,"delete_custom_taxonomy_mf_custom_taxonomy");
                 ?>
                 <a href="<?php print($link);?>" class="mf_confirm" alt="<?php _e("This action can't be undone, are you sure?", $mf_domain );?>">Delete</a>
               </span>
+              <?php endif; ?>
             </div>
           </td>
-          <td> <?php echo $tax['type']; ?></td>
-          <td><?php echo $tax['description']; ?></td>
+          <td> <?php echo $tax->name; ?></td>
+          <td><?php echo $tax->description; ?></td>
         </tr>
           <?php endforeach; ?>
         <?php endif; ?>

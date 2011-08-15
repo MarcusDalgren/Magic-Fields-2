@@ -23,11 +23,11 @@ class mf_custom_taxonomy extends mf_admin{
    */
   public function edit_custom_taxonomy() {
 
-    if(!isset($_GET['custom_taxonomy_id']) ){
+    if(!isset($_GET['taxonomy']) ){
       $this->mf_redirect(null,null,array('message' => 'success'));
     }
 
-    $custom_taxonomy = $this->get_custom_taxonomy($_GET['custom_taxonomy_id']);
+    $custom_taxonomy = $this->get_custom_taxonomy_by_type($_GET['taxonomy']);
 
     if( !$custom_taxonomy ){
       $this->mf_redirect(null,null,array('message' => 'error'));
@@ -54,7 +54,7 @@ class mf_custom_taxonomy extends mf_admin{
   }
 
   /**
-   * get a specific post type
+   * get a specific taxonomy
    */
   public function get_custom_taxonomy($custom_taxonomy_id){
     global $wpdb;
@@ -103,18 +103,16 @@ class mf_custom_taxonomy extends mf_admin{
     //checking the nonce
     check_admin_referer('delete_custom_taxonomy_mf_custom_taxonomy');
 
-    if( isset($_GET['custom_taxonomy_id']) ){
-      $id = (int)$_GET['custom_taxonomy_id'];
+    if( isset($_GET['taxonomy']) ){
+      $id = $_GET['taxonomy'];
 
-      if( is_int($id) ){
-        $sql = sprintf(
-          "DELETE FROM " . MF_TABLE_CUSTOM_TAXONOMY .
-          " WHERE id = %d",
-          $id
-        );
-        $wpdb->query($sql);
-        $this->mf_redirect(null,null,array('message' => 'success'));
-      }
+      $sql = sprintf(
+        "DELETE FROM " . MF_TABLE_CUSTOM_TAXONOMY .
+        " WHERE type = %s",
+        $id
+      );
+      $wpdb->query($sql);
+      $this->mf_redirect(null,null,array('message' => 'success'));
     }
   }
 

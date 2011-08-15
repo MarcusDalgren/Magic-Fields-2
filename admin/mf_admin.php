@@ -106,7 +106,7 @@ class mf_admin {
     $custom_taxonomy = $wpdb->get_row( $query, ARRAY_A );
     if($custom_taxonomy){
       $id = $custom_taxonomy['id'];
-      $custom_taxonomy = unserialize($custom_taxonomy['arguments'],true);
+      $custom_taxonomy = unserialize($custom_taxonomy['arguments']);
       $custom_taxonomy['core']['id'] = $id;
       return $custom_taxonomy;
     }
@@ -116,11 +116,12 @@ class mf_admin {
    /**
    * return all custom_taxonomy
    */
-  public function get_custom_taxonomies(){
+  public function get_custom_taxonomies( $args = array('public' => true), $output = 'object', $operator = 'and' ){
     global $wpdb;
 
     $query = sprintf('SELECT * FROM %s ORDER BY id',MF_TABLE_CUSTOM_TAXONOMY);
     $custom_taxonomies = $wpdb->get_results( $query, ARRAY_A );
+    $custom_taxonomies = get_taxonomies( $args, $output, $operator ); 
     return $custom_taxonomies;
   }
 
