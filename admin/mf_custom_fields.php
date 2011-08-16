@@ -275,7 +275,7 @@ class mf_custom_fields extends mf_admin {
       //insert
       $this->new_custom_field($mf);
     }
-    $this->mf_redirect('mf_custom_fields','fields_list',array('message' => 'success','post_type' => $mf['core']['post_type']));
+    $this->mf_redirect(array('mf_custom_fields'=>'fields_list'),array('message' => 'success','post_type' => $mf['core']['post_type']));
   }
 
   public function get_custom_fields_post_type($post_type){

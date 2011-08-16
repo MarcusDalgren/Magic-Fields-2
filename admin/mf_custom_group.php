@@ -55,7 +55,7 @@ class mf_custom_group extends mf_admin {
         $wpdb->query($sql_fields);
 
         //ToDo: poner mensaje de que se borro correctamente
-        $this->mf_redirect('mf_custom_fields','fields_list',array('message' => 'success','post_type' => $group['post_type']));
+        $this->mf_redirect(array('mf_custom_fields'=>'fields_list'),array('message' => 'success','post_type' => $group['post_type']));
         
       }
     }
@@ -74,7 +74,7 @@ class mf_custom_group extends mf_admin {
     }
     
     //redirect to dashboard fields
-    $this->mf_redirect('mf_custom_fields','fields_list',array('message' => 'success','post_type' => $mf['core']['post_type']));
+    $this->mf_redirect(array('mf_custom_fields'=>'fields_list'),array('message' => 'success','post_type' => $mf['core']['post_type']));
   }  
 
   public function get_custom_fields_post_type($post_type){

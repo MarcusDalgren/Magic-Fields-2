@@ -24,13 +24,13 @@ class mf_custom_taxonomy extends mf_admin{
   public function edit_custom_taxonomy() {
 
     if(!isset($_GET['taxonomy']) ){
-      $this->mf_redirect(null,null,array('message' => 'success'));
+      $this->mf_redirect(null,array('message' => 'success'));
     }
 
     $custom_taxonomy = $this->get_custom_taxonomy_by_type($_GET['taxonomy']);
 
     if( !$custom_taxonomy ){
-      $this->mf_redirect(null,null,array('message' => 'error'));
+      $this->mf_redirect(null,array('message' => 'error'));
     }
     $data = $this->fields_form();
 
@@ -91,7 +91,7 @@ class mf_custom_taxonomy extends mf_admin{
         }
       }
     }
-    $this->mf_redirect(null,null,array('message' => 'success'));
+    $this->mf_redirect(null,array('message' => 'success'));
   }
 
   /**
@@ -112,7 +112,7 @@ class mf_custom_taxonomy extends mf_admin{
         $id
       );
       $wpdb->query($sql);
-      $this->mf_redirect(null,null,array('message' => 'success'));
+      $this->mf_redirect(null,array('message' => 'success'));
     }
   }
 

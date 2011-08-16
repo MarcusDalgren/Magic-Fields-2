@@ -78,7 +78,6 @@ $mf_register = new mf_register();
 //Adding metaboxes, and hooks for save the data when is created a new post
 $mf_post = new mf_post();
 
-
 if( is_admin() ) {
 
   //load_plugin_textdomain($mf_domain    , '/'.PLUGINDIR.'/'.dirname(plugin_basename(__FILE__)).'/lang', basename(dirname(__FILE__)).'/lang');
@@ -121,21 +120,26 @@ load_plugin_textdomain('magic_fields', '/'.PLUGINDIR.'/'.dirname(plugin_basename
    * Magic Fields dispatcher
    */ 
   function mf_dispatcher() {
-    $section = "mf_dashboard";
-    $action = "main";
+    $section = array("mf_dashboard");
+    $action = array("main");
 
     //Section
     if( !empty( $_GET['mf_section'] ) ) {
-      $section = urlencode($_GET['mf_section']);
+      $section = (array)$_GET['mf_section'];
+      for ($i = 0; $i < count($section); $i++)
+        $section[$i] = urlencode( $section[$i] );
     }
 
     //Action
     if( !empty( $_GET['mf_action'] ) ) {
-      $action = urlencode( $_GET['mf_action'] );
+      $action = (array)$_GET['mf_action'];
+      for ($i = 0; $i < count($action); $i++)
+        $action[$i] = urlencode( $action[$i] );
     }
-    
-    $tmp = new $section();
-    $tmp->$action();
+    for ($i = 0; $i < count($section); $i++) {
+      $tmp = new $section[$i]();
+      $tmp->$action[$i]();
+    }  
     //call_user_func( array( $section, $action ) );
   }
 

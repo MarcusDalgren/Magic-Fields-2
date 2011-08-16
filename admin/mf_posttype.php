@@ -548,12 +548,11 @@ class mf_posttype extends mf_admin {
         $this->_add_cap($name);
       }
     }
-    $this->mf_redirect(null,null,array('message' => 'success'));
+    $this->mf_redirect(array("mf_posttype" => "update_rewrite", "mf_dashboard" => "main"),array('message' => 'success'));
   }
 
   public function update_rewrite() {
     flush_rewrite_rules(false);
-    $this->mf_redirect(null,null,array('message' => 'success'));
   }
   /**
    * Add a news Capabilities for Administrator
@@ -629,7 +628,7 @@ class mf_posttype extends mf_admin {
         $sql_fields = sprintf("DELETE FROM %s WHERE post_type = '%s'",MF_TABLE_CUSTOM_FIELDS,$post_type);
         $wpdb->query($sql_fields);
         
-        $this->mf_redirect(null,null,array('message' => 'success'));
+        $this->mf_redirect(null,array('message' => 'success'));
       }
     }
   }
@@ -823,7 +822,7 @@ class mf_posttype extends mf_admin {
       $overwrite = $_POST['mf_post_type']['import']['overwrite'];
       $this->import($file_path,$overwrite);
       unlink($filePath);
-      $this->mf_redirect(null,null,array('message' => 'success'));
+      $this->mf_redirect(null,array('message' => 'success'));
     }else{
       //mensaje de error
       die(__('Error uploading file!', $mf_domain));

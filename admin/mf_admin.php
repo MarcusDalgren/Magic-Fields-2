@@ -6,33 +6,36 @@ class mf_admin {
 
   public $name = 'mf_admin';
 
-  function _get_url(  $section = 'mf_dashboard', $action = 'main', $vars = array( ) ){
+  function _get_url(  $request = array('mf_dashboard' => 'main'), $vars = array( ) ){
     $url = home_url();
 
     //the admin area of Magic Fields always should pass through the dispatcher:
     $url .= '/wp-admin/admin.php?page=mf_dispatcher';
-
+    $section_url = "";
+    $action_url = "";
+    $vars_url = "";
     //section
-    $url .= '&mf_section='.$section;
-
-    //action
-    $url .= '&mf_action='.$action;
-
-    if( !empty( $vars ) ) {
-      foreach($vars as $param => $value) {
-        $url .= '&'.$param.'='.$value;
-      }
+    foreach ((array)$request as $section => $action) {
+      $section_url .= '&'.urlencode('mf_section[]').'='.$section;
+      $action_url .= '&'.urlencode('mf_action[]').'='.$action;
     }
+    
 
+    foreach((array)$vars as $param => $value) {
+      $vars_url .= '&'.$param.'='.$value;
+    }
+    $url .= $section_url.$action_url.$vars_url;
+    echo $url;
+    die();
     return $url;
   }
 
   /**
    * is a wrapper of wp_safe_redirect
    */
-  function mf_redirect( $section = 'mf_dashboard', $action = 'main', $vars = array( ) ) {
+  function mf_redirect( $request = array('mf_dashboard' => 'main'), $vars = array( ) ) {
 
-    $url = $this->_get_url(  $section , $action , $vars );
+    $url = $this->_get_url(  $request, $vars );
     wp_safe_redirect($url);
     exit;
   }
