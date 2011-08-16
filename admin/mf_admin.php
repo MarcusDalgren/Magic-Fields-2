@@ -606,7 +606,7 @@ class mf_admin {
 
     $sql = sprintf(
       "INSERT INTO %s ".
-      "(name,label,description,post_type,custom_group_id,type,requiered_field,duplicated,options) ".
+      "(name,label,description,post_type,custom_group_id,type,required_field,duplicated,options) ".
       "VALUES ('%s','%s','%s','%s',%s,'%s',%s,%s,'%s')",
       MF_TABLE_CUSTOM_FIELDS,
       $data['core']['name'],
@@ -615,7 +615,7 @@ class mf_admin {
       $data['core']['post_type'],
       $data['core']['custom_group_id'],
       $data['core']['type'],
-      $data['core']['requiered_field'],
+      $data['core']['required_field'],
       $data['core']['duplicate'],
       serialize($data['option'])
     );
@@ -641,7 +641,7 @@ class mf_admin {
 
     $sql = sprintf(
      "UPDATE %s ".
-     "SET name = '%s', label = '%s', description = '%s',type = '%s', requiered_field = %d, ".
+     "SET name = '%s', label = '%s', description = '%s',type = '%s', required_field = %d, ".
      "duplicated = %d, options = '%s' ".
      "WHERE id = %d",
      MF_TABLE_CUSTOM_FIELDS,
@@ -649,7 +649,7 @@ class mf_admin {
      $data['core']['label'],
      $data['core']['description'],
      $data['core']['type'],
-     $data['core']['requiered_field'],
+     $data['core']['required_field'],
      $data['core']['duplicate'],
      serialize($data['option']),
      $data['core']['id']

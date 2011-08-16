@@ -49,7 +49,7 @@ class mf_install {
       post_type varchar(120) NOT NULL,
       custom_group_id int(19) NOT NULL,
       type varchar(100) NOT NULL,
-      requiered_field tinyint(1),
+      required_field tinyint(1),
       display_order mediumint(9) DEFAULT 0, 
       duplicated tinyint(1),
       active tinyint(1) DEFAULT 1,
