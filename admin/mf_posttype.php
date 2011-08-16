@@ -548,7 +548,7 @@ class mf_posttype extends mf_admin {
         $this->_add_cap($name);
       }
     }
-    $this->mf_redirect("mf_posttype","update_rewrite");
+    $this->mf_redirect(null,null,array('message' => 'success'));
   }
 
   public function update_rewrite() {

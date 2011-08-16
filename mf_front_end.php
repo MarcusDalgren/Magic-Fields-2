@@ -9,11 +9,8 @@
  * @param integer $post_id
  * @return a string or array based on field type
  */
-function get ($field_name, $group_index=1, $field_index=1 ,$post_id=NULL) {
-  global $post;
+function get ($field_name, $group_index=1, $field_index=1, $post_id=NULL) {
 
-  if(!$post_id){ $post_id = $post->ID; }
-  
   $field = get_data($field_name,$group_index,$field_index,$post_id);
   if(!$field) return FALSE;
 
@@ -516,10 +513,11 @@ function _processed_value($value, $type, $options = array(), $image_array = 0 ){
 }
 
 
-function get_data( $field_name, $group_index=1, $field_index=1, $post_id ){
-  global $wpdb;
+function get_data( $field_name, $group_index=1, $field_index=1, $post_id = null ){
+  global $wpdb, $post;
 
   $field_name = str_replace(" ","_",$field_name);
+  if (!$post_id) $post_id = $post->ID;
 
   $sql = sprintf(
     "SELECT m.meta_id,w.meta_value,f.type,f.options,f.description,f.label " .
