@@ -25,8 +25,6 @@ class mf_admin {
       $vars_url .= '&'.$param.'='.$value;
     }
     $url .= $section_url.$action_url.$vars_url;
-    echo $url;
-    die();
     return $url;
   }
 
