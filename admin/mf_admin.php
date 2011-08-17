@@ -606,7 +606,7 @@ class mf_admin {
 
     $sql = sprintf(
       "INSERT INTO %s ".
-      "(name,label,description,post_type,custom_group_id,type,required_field,duplicated,options) ".
+      "(name,label,description,post_type,custom_group_id,type,requiered_field,duplicated,options) ".
       "VALUES ('%s','%s','%s','%s',%s,'%s',%s,%s,'%s')",
       MF_TABLE_CUSTOM_FIELDS,
       $data['core']['name'],

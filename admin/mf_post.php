@@ -8,10 +8,10 @@ class mf_post extends mf_admin {
 
   function __construct() {
     //creating metaboxes
-    add_action( 'add_meta_boxes', array( &$this, 'mf_post_add_metaboxes' ));
+    add_action( 'add_meta_boxes', array( $this, 'mf_post_add_metaboxes' ));
 
     //save data
-    add_action( 'save_post', array( &$this, 'mf_save_post_data' ) );
+    add_action( 'save_post', array( $this, 'mf_save_post_data' ) );
   }
 
   /**
@@ -39,7 +39,7 @@ class mf_post extends mf_admin {
           add_meta_box(
             'mf_'.$group['id'],
             $group['label'],
-            array( &$this, 'mf_metabox_content' ),
+            array( $this, 'mf_metabox_content' ),
             $post_type,
             'normal',
             'default',
