@@ -10,7 +10,7 @@ class mf_posttype extends mf_admin {
   public $name = 'mf_post_type';
 
   public function __construct() {
-
+		parent::__construct();
   }
 
   /** add a new post type **/
@@ -580,26 +580,7 @@ class mf_posttype extends mf_admin {
     
   }  
 
-  /**
-   * get a specific post type using the post_type_id or the post_type_name
-   *
-   * @param mixed  post_type, can be a integer or a string
-   * @return array
-   */
-  public function get_post_type($post_type){
-    global $wpdb;
-    
-    $query = $wpdb->prepare( "SELECT * FROM ".MF_TABLE_POSTTYPES." WHERE type = %s", array( $post_type ) );
 
-    $post_type = $wpdb->get_row( $query, ARRAY_A );
-    if($post_type){
-      $post_type_id = $post_type['id'];
-      $post_type = unserialize($post_type['arguments']);
-      $post_type['core']['id'] = $post_type_id;
-      return $post_type;
-    }
-    return false;
-  }
 
   /**
    * delete a post type

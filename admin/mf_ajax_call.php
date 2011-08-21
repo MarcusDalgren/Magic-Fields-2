@@ -3,7 +3,7 @@
 class mf_ajax_call{
 
   public function __construct(){
-
+		parent::__construct();
   }
 
   public function resolve($data){
@@ -66,10 +66,10 @@ class mf_ajax_call{
     $post_type = $data['post_type'];
     $id = $data['field_id'];
     $resp = array('success' => 1);
-    
-    $check = mf_custom_fields::check_group($name,$post_type,$id);
+    $group_id = $data['group_id'];
+    $check = mf_custom_fields::check_group($name,$id);
     if($check){
-      $resp = array('success' => 0, 'msg' => __('The name of Field exist in this post type, Please choose a different name.',$mf_domain) );
+      $resp = array('success' => 0, 'msg' => __('A field with this name already exists, please choose a different name.',$mf_domain) );
     }
     echo json_encode($resp);
   }

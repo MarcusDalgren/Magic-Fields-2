@@ -1,0 +1,1 @@
+<h3><?php echo __(' Custom Groups',$mf_domain)?> <a href="admin.php?page=mf_dispatcher&mf_section=mf_custom_taxonomy&mf_action=add_custom_taxonomy" class="add-new-h2 button"><?php echo __( 'Add new Custom Group', $mf_domain )?></a></h3>

@@ -5,6 +5,15 @@
 class mf_admin {
 
   public $name = 'mf_admin';
+  public $post_types = array();
+  protected $wpdb = null;
+  protected $tpl_vars = array();
+
+	public function __construct() {
+		global $wpdb;
+		
+		$this->wpdb = $wpdb;
+	}
 
   function _get_url(  $section = 'mf_dashboard', $action = 'main', $vars = array( ) ){
     $url = home_url();
@@ -90,6 +99,27 @@ class mf_admin {
 
     return $post_types;
   }
+  
+  /**
+   * get a specific post type using the post_type_id or the post_type_name
+   *
+   * @param mixed  post_type, can be a integer or a string
+   * @return array
+   */
+  public function get_post_type($post_type){
+    global $wpdb;
+    if (isset($this->post_types[$post_type])) return $this->post_types[$post_type];
+    $query = $wpdb->prepare( "SELECT * FROM ".MF_TABLE_POSTTYPES." WHERE type = %s", array( $post_type ) );
+
+    $post_type = $wpdb->get_row( $query, ARRAY_A );
+    if($post_type){
+      $post_type_id = $post_type['id'];
+      $post_type = unserialize($post_type['arguments']);
+      $post_type['core']['id'] = $post_type_id;
+      return $post_type;
+    }
+    return false;
+  }  
 
   /**
    * get a specific custom_taxonomy
@@ -125,19 +155,30 @@ class mf_admin {
     return $custom_taxonomies;
   }
 
+  
+   /**
+   * return all groups
+   */
+  public function get_groups() {
+  	$query = sprintf("SELECT * FROM %s ORDER BY id",MF_TABLE_CUSTOM_GROUPS);
+  	$groups = $this->wpdb->get_results($query);
+  	return $groups;
+  }
+
   /**
-   * return all gruops of post type
+   * return all groups of post type
    */
   public function get_groups_by_post_type($post_type){
     global $wpdb;
-
-    $query = sprintf("SELECT * FROM %s WHERE post_type = '%s' ORDER BY id",MF_TABLE_CUSTOM_GROUPS,$post_type);
+		
+		$post_type = $this->get_post_type($post_type);
+    $query = sprintf("SELECT * FROM %s WHERE post_type_id = %d ORDER BY id",MF_TABLE_CUSTOM_GROUPS,$post_type['core']['id']);
     $groups = $wpdb->get_results( $query, ARRAY_A);
     return $groups;
   }
 
   /**
-   * retun a group
+   * return a group
    */
   public function get_group($group_id){
     global $wpdb;
@@ -153,11 +194,12 @@ class mf_admin {
   public function get_group_by_name($name_group,$post_type){
     global $wpdb;
 
+		$post_type = $this->get_post_type($post_type);
     $query = sprintf(
-      'SELECT * FROM %s WHERE name = "%s" AND post_type = "%s" ',
+      'SELECT * FROM %s WHERE name = "%s" AND post_type_id = %d ',
       MF_TABLE_CUSTOM_GROUPS,
       $name_group,
-      $post_type
+      $post_type['core']['id']
     );
     $group = $wpdb->get_row( $query, ARRAY_A);
     return $group;
@@ -169,7 +211,8 @@ class mf_admin {
   public function get_default_custom_group($post_type){
     global $wpdb;
 
-    $query = sprintf("SELECT id FROM %s WHERE name = '__default' AND post_type = '%s' ",MF_TABLE_CUSTOM_GROUPS,$post_type);
+		$post_type = $this->get_post_type($post_type);
+    $query = sprintf("SELECT id FROM %s WHERE name = '__default' AND post_type_id = %d ",MF_TABLE_CUSTOM_GROUPS,$post_type['core']['id']);
     $group = $wpdb->get_col($query);
 
     //exists default group?
@@ -606,13 +649,12 @@ class mf_admin {
 
     $sql = sprintf(
       "INSERT INTO %s ".
-      "(name,label,description,post_type,custom_group_id,type,requiered_field,duplicated,options) ".
-      "VALUES ('%s','%s','%s','%s',%s,'%s',%s,%s,'%s')",
+      "(name,label,description,custom_group_id,type,required_field,duplicated,options) ".
+      "VALUES ('%s','%s','%s',%s,'%s',%s,%s,'%s')",
       MF_TABLE_CUSTOM_FIELDS,
       $data['core']['name'],
       $data['core']['label'],
       $data['core']['description'],
-      $data['core']['post_type'],
       $data['core']['custom_group_id'],
       $data['core']['type'],
       $data['core']['required_field'],
@@ -638,7 +680,8 @@ class mf_admin {
     }
 
     $data['core']['name'] = str_replace(" ","_",$data['core']['name']);
-
+    $sql = sprintf("SELECT name FROM %s WHERE id = %d", MF_TABLE_CUSTOM_FIELDS, $data['core']['id']);
+    $old_name = $wpdb->get_var($sql);
     $sql = sprintf(
      "UPDATE %s ".
      "SET name = '%s', label = '%s', description = '%s',type = '%s', required_field = %d, ".
@@ -654,7 +697,12 @@ class mf_admin {
      serialize($data['option']),
      $data['core']['id']
     );
-    $wpdb->query($sql);
+    $update = $wpdb->query($sql);
+    
+    // Check so that there wasn't an error in the update and that the field name was updated.
+    // if ($update !== false && ($old_name != $data['core']['name'])) {
+      
+    // }
   }
 
   /* function for save and update custom taxonomies */
@@ -702,4 +750,41 @@ class mf_admin {
     $wpdb->query($sql);
   }
 
+
+	protected function assign($var, $value = null) {
+		if (is_array($var)) {
+			$this->tpl_vars = array_merge($this->tpl_vars, $var);
+		}
+		else {
+			$this->tpl_vars[$var] = $value;
+		}
+		return $this;
+	}
+	
+	// Copied from core to keep object context in template files Thanks WP ur awesome!
+	protected function load_template( $_template_file, $require_once = false ) {
+		global $posts, $post, $wp_did_header, $wp_did_template_redirect, $wp_query, $wp_rewrite, $wpdb, $wp_version, $wp, $id, $comment, $user_ID;
+	
+		if ( is_array( $wp_query->query_vars ) )
+			extract( $wp_query->query_vars, EXTR_SKIP );
+
+		extract( $this->tpl_vars );
+
+		ob_start();
+		if ( $require_once )
+			require_once( $_template_file );
+		else
+			require( $_template_file );
+		return ob_get_clean();	
+	}	
+	
+	protected function render( $_template_file, $require_once = false ) {
+		$_template_file = MF_PATH."/templates/".$_template_file.".php";
+		echo $this->load_template( $_template_file, $require_once );
+	}
+	
+	protected function render_partial( $_template_file, $require_once = false ) {
+		$_template_file = MF_PATH."/templates/partials/".$_template_file.".php";
+		echo $this->load_template( $_template_file, $require_once );
+	}
 }

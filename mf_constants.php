@@ -37,13 +37,16 @@ if( mf_mu_alone() ){
   $mf_prefix = $wpdb->base_prefix;
 }
 
-define( 'MF_TABLE_POSTTYPES',       $mf_prefix . 'mf_posttypes' );
-define( 'MF_TABLE_CUSTOM_TAXONOMY', $mf_prefix . 'mf_custom_taxonomy' );
-define( 'MF_TABLE_CUSTOM_FIELDS',   $mf_prefix . 'mf_custom_fields' );
-define( 'MF_TABLE_CUSTOM_GROUPS',   $mf_prefix . 'mf_custom_groups' );
-define( 'MF_TABLE_POST_META',       $wpdb->prefix.'mf_post_meta' );
+define( 'MF_TABLE_POSTTYPES',       		$mf_prefix . 'mf_posttypes' );
+define( 'MF_TABLE_CUSTOM_TAXONOMY', 		$mf_prefix . 'mf_custom_taxonomy' );
+define( 'MF_TABLE_CUSTOM_FIELDS',   		$mf_prefix . 'mf_custom_fields' );
+define( 'MF_TABLE_CUSTOM_GROUPS',   		$mf_prefix . 'mf_custom_groups' );
+define( 'MF_TABLE_POST_META',      		$wpdb->prefix.'mf_post_meta' );
+define( 'MF_TABLE_POSTTYPES_GROUPS',    $mf_prefix.'mf_posttypes_groups' );
+define( 'MF_TABLE_WRITE_PANELS_GROUPS', $mf_prefix.'mf_write_panels_groups' );
+define( 'MF_TABLE_WRITE_PANELS',       	$mf_prefix.'mf_write_panels' );
 
 //define name for settings MF
 define('MF_SETTINGS_KEY', 'mf_settings');
 define('MF_DB_VERSION_KEY', 'mf_db_version');
-define('MF_DB_VERSION', 1);
+define('MF_DB_VERSION', 2);

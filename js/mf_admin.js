@@ -73,9 +73,16 @@ jQuery(document).ready(function($) {
   
   //validation custom field
   $('#addCustomField').submit(function(){
-    name = $("#customfield-name").val();
-    field_id = $("#customfield_id").val();
-    post_type = $("#customfield-post_type").val();
+  	var data = {
+  		action: "mf_call",
+  		type: "check_name_custom_field",
+  		field_name: $("#customfield-name").val(),
+  		field_id: $("#customfield_id").val(),
+    	post_type: $("#customfield-post_type").val(),
+    	group_id: $("#customfield_custom_group_id").val()
+  	}
+    var name = $("#customfield-name").val();
+    var field_id = $("#customfield_id").val();
     var status = 0;
     if(name){
       jQuery.ajax({
@@ -83,7 +90,7 @@ jQuery(document).ready(function($) {
          type: 'POST',
          async: false,
          dataType: 'json',
-         data: "action=mf_call&type=check_name_custom_field&field_name="+name+"&post_type="+post_type+"&field_id="+field_id,
+         data: data,
          success: function(response){
            $("#message_mf_error").hide();
            if(response.success){

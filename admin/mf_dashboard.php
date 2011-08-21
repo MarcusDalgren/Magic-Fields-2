@@ -10,7 +10,7 @@ class mf_dashboard extends mf_admin {
   public $name = 'mf_dashboard';
  
   function __construct() {
-
+		parent::__construct();
   }
 
   function main() {
@@ -18,6 +18,7 @@ class mf_dashboard extends mf_admin {
     
     $posttypes = $this->mf_get_post_types();
     $custom_taxonomies = $this->get_custom_taxonomies();
+    $groups = $this->get_groups();
     
     print '<div class="wrap">';
     print '<h2>'.__( 'Magic Fields',$mf_domain).'</h2>';
@@ -138,6 +139,8 @@ class mf_dashboard extends mf_admin {
     </table>
     <?php
     endif;
+    $this->render_partial("group_table");
+    
     print '</div>';
   }
 

@@ -7,6 +7,7 @@
 class mf_post extends mf_admin {
 
   function __construct() {
+		parent::__construct();
     //creating metaboxes
     add_action( 'add_meta_boxes', array( $this, 'mf_post_add_metaboxes' ));
 

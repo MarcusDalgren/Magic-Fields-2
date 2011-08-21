@@ -13,6 +13,7 @@ class mf_custom_fields extends mf_admin {
 
 
   public function __construct() {
+		parent::__construct();
     $this->_update_description();
     $this->_update_options();
   }
@@ -191,7 +192,7 @@ class mf_custom_fields extends mf_admin {
             <?php if($field['required_field']): ?><span class="required">*</span> <?php endif; ?>
             <div class="row-actions">
               <span class="edit">
-               <a href="admin.php?page=mf_dispatcher&mf_section=mf_custom_fields&mf_action=edit_field&custom_field_id=<?php echo $field['id'];?>"><?php _e('Edit',$mf_domain); ?></a>
+               <a href="admin.php?page=mf_dispatcher&mf_section=mf_custom_fields&mf_action=edit_field&custom_field_id=<?php echo $field['id'];?>&post_type=<?php echo $_GET['post_type'] ?>"><?php _e('Edit',$mf_domain); ?></a>
               </span> |
               <span class="delete">
                 <?php
@@ -311,6 +312,11 @@ class mf_custom_fields extends mf_admin {
 
     $custom_fields = $this->get_custom_fields_name();
     $post_type = isset($_GET['post_type'])? $_GET['post_type'] : '';
+    $post_type_id = '';
+    if ($post_type != '') {
+      $post_type_id = $this->get_post_type($post_type);
+      $post_type_id = $post_type_id['core']['id'];
+    }
     $custom_field_id = isset($_GET['custom_field_id'])? $_GET['custom_field_id']: '';
     $custom_group_id = isset($_GET['custom_group_id'])? $_GET['custom_group_id']: '';
     $data = array(
@@ -320,6 +326,12 @@ class mf_custom_fields extends mf_admin {
           'id'   => 'customfield_id',
           'name'  => 'mf_field[core][id]',
           'value' => $custom_field_id
+        ),
+        'post_type_id' => array(
+          'type' => 'hidden',
+          'id'   => 'customfield-post_type_id',
+          'name' => 'mf_field[core][post_type_id]',
+          'value' => $post_type_id
         ),
         'post_type' => array(
           'type' => 'hidden',
@@ -595,14 +607,13 @@ class mf_custom_fields extends mf_admin {
     );
   }
 
-  public function check_group($name,$post_type,$id = NULL){
+  public function check_group($name,$id = NULL){
     global $wpdb;
 
     $query = sprintf(
-      "SELECT COUNT(*) FROM %s WHERE name = '%s' AND post_type = '%s' ",
+      "SELECT COUNT(*) FROM %s WHERE name = '%s'",
       MF_TABLE_CUSTOM_FIELDS,
-      $name,
-      $post_type
+      $name
     );
     if($id)
       $query = sprintf("%s AND id != %s",$query,$id);

@@ -9,7 +9,7 @@ class mf_custom_taxonomy extends mf_admin{
   public $name = 'mf_custom_taxonomy';
 
   public function __construct(){
-  
+		parent::__construct();
   }
   
   /** add a new custom taxonomy **/

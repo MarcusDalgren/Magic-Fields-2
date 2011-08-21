@@ -3,96 +3,172 @@
  * This file content the routines for install/activate  uninstall/deactivate Magic Fields
  */
 class mf_install { 
+	
+	static function get_collation() {
+    global $wpdb;
 
-  function install () {
+    $charset_collate = "";
+		if ( ! empty($wpdb->charset) )
+			$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
+		if ( ! empty($wpdb->collate) )
+			$charset_collate .= " COLLATE $wpdb->collate";
+			
+		return $charset_collate;	
+	}
+
+  static function install () {
     global $wpdb;
 
     require_once(ABSPATH.'wp-admin/includes/upgrade.php');
-
     // Get collation info
-    $charset_collate = "";
-	if ( ! empty($wpdb->charset) )
-		$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
-	if ( ! empty($wpdb->collate) )
-		$charset_collate .= " COLLATE $wpdb->collate";
+    $charset_collate = self::get_collation();
 
+    $sql = array();
     //checking if the table is already installed
-    $sql = "CREATE TABLE IF NOT EXISTS ".MF_TABLE_POSTTYPES. " (
-      id mediumint(9) NOT NULL AUTO_INCREMENT,
-      type varchar(20) NOT NULL,
-      name varchar(50) NOT NULL,
-      description text,
-      arguments text,
-      active tinyint(1) DEFAULT 1,
-      PRIMARY KEY id (id) ) $charset_collate
-    ";
-    dbDelta($sql);
+    if($wpdb->get_var( sprintf("SHOW tables LIKE '%s'",MF_TABLE_POSTTYPES) ) != MF_TABLE_POSTTYPES)
+	    $sql[] = "CREATE TABLE ".MF_TABLE_POSTTYPES. " (
+	      id mediumint(9) NOT NULL AUTO_INCREMENT,
+	      type varchar(20) NOT NULL,
+	      name varchar(50) NOT NULL,
+	      description text,
+	      arguments text,
+	      active tinyint(1) DEFAULT 1,
+	      PRIMARY KEY id (id) ) $charset_collate
+	    ";
 
     // Table custom taxonomy
-    $sql = "CREATE TABLE IF NOT EXISTS ".MF_TABLE_CUSTOM_TAXONOMY. " (
-      id mediumint(9) NOT NULL AUTO_INCREMENT,
-      type varchar(20) NOT NULL,
-      name varchar(50) NOT NULL,
-      description text,
-      arguments text,
-      active tinyint(1) DEFAULT 1,
-      PRIMARY KEY id (id) ) $charset_collate
-    ";
-    dbDelta($sql);
+    if($wpdb->get_var( sprintf("SHOW tables LIKE '%s'",MF_TABLE_CUSTOM_TAXONOMY) ) != MF_TABLE_CUSTOM_TAXONOMY)
+	    $sql[] = "CREATE TABLE ".MF_TABLE_CUSTOM_TAXONOMY. " (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        type varchar(20) NOT NULL,
+        name varchar(50) NOT NULL,
+        description text,
+        arguments text,
+        active tinyint(1) DEFAULT 1,
+	      PRIMARY KEY id (id) ) $charset_collate
+	    ";
     
     // Table custom fields
-    $sql = "CREATE TABLE IF NOT EXISTS ".MF_TABLE_CUSTOM_FIELDS. " (
-      id int(19) NOT NULL AUTO_INCREMENT,
-      name varchar(150) NOT NULL,
-      label varchar(150) NOT NULL,
-      description text,
-      post_type varchar(120) NOT NULL,
-      custom_group_id int(19) NOT NULL,
-      type varchar(100) NOT NULL,
-      required_field tinyint(1),
-      display_order mediumint(9) DEFAULT 0, 
-      duplicated tinyint(1),
-      active tinyint(1) DEFAULT 1,
-      options text,
-      PRIMARY KEY id (id) ) $charset_collate
-    ";
-    dbDelta($sql);
+    if($wpdb->get_var( sprintf("SHOW tables LIKE '%s'",MF_TABLE_CUSTOM_FIELDS) ) != MF_TABLE_CUSTOM_FIELDS)
+	    $sql[] = "CREATE TABLE ".MF_TABLE_CUSTOM_FIELDS. " (
+        id int(19) NOT NULL AUTO_INCREMENT,
+        custom_group_id int(19) NOT NULL,
+        name varchar(150) NOT NULL,
+        label varchar(150) NOT NULL,
+        description text,
+        post_type varchar(120) NOT NULL,
+        type varchar(100) NOT NULL,
+        requiered_field tinyint(1),
+        display_order mediumint(9) DEFAULT 0, 
+        duplicated tinyint(1),
+        active tinyint(1) DEFAULT 1,
+        options text,
+	      PRIMARY KEY id (id) ) $charset_collate
+	    ";
 
     // Table custom groups
-    $sql = "CREATE TABLE IF NOT EXISTS ".MF_TABLE_CUSTOM_GROUPS. " (
-      id integer NOT NULL AUTO_INCREMENT,
-      name varchar(255) NOT NULL,
-      label varchar(255) NOT NULL,
-      post_type varchar(255) NOT NULL,
-      duplicated tinyint(1) DEFAULT 0,
-      expanded tinyint(1) DEFAULT 0,
-      PRIMARY KEY id (id) ) $charset_collate
-    ";
-    dbDelta($sql);
+    if($wpdb->get_var( sprintf("SHOW tables LIKE '%s'",MF_TABLE_CUSTOM_GROUPS) ) != MF_TABLE_CUSTOM_GROUPS)
+	    $sql[] = "CREATE TABLE ".MF_TABLE_CUSTOM_GROUPS. " (
+        id integer NOT NULL AUTO_INCREMENT,
+        name varchar(255) NOT NULL,
+        label varchar(255) NOT NULL,
+        post_type varchar(255) NOT NULL,
+        duplicated tinyint(1) DEFAULT 0,
+        expanded tinyint(1) DEFAULT 0,
+	      PRIMARY KEY id (id) ) $charset_collate
+	    ";
 
     // Table MF Post Meta
-    $sql = "CREATE TABLE IF NOT EXISTS ".MF_TABLE_POST_META." ( 
-      meta_id INT NOT NULL, 
-      field_name VARCHAR(255) NOT NULL, 
-      field_count INT NOT NULL,  
-      group_count  INT NOT NULL, 
-      post_id INT NOT NULL,
-      PRIMARY KEY meta_id (meta_id) ) $charset_collate
-	";
+    if( $wpdb->get_var( sprintf("SHOW tables LIKE '%s'",MF_TABLE_POST_META) ) != MF_TABLE_POST_META )
+	    $sql[] = "CREATE TABLE ".MF_TABLE_POST_META." ( 
+        meta_id INT NOT NULL, 
+        field_name VARCHAR(255) NOT NULL, 
+        field_count INT NOT NULL,  
+        group_count  INT NOT NULL, 
+        post_id INT NOT NULL,
+	      PRIMARY KEY meta_id (meta_id) ) $charset_collate
+	  	";
     dbDelta($sql);
     
     if (get_option(MF_DB_VERSION_KEY) == '') update_option(MF_DB_VERSION_KEY, 1);
 
     if (get_option(MF_DB_VERSION_KEY) < MF_DB_VERSION){
       self::upgrade();
-      update_option(MF_DB_VERSION_KEY, MF_DB_VERSION);
+      //update_option(MF_DB_VERSION_KEY, MF_DB_VERSION);
     }
     
     
   }
   
-  public function upgrade(){
-  
+  static function upgrade(){
+    global $wpdb;
+    require_once(ABSPATH.'wp-admin/includes/upgrade.php');
+    
+    // Assuming that upgrades are sequential so this has to run first before other upgrades
+    if (get_option(MF_DB_VERSION_KEY) == 1 && MF_DB_VERSION > 1) {
+			
+	    $charset_collate = self::get_collation();
+			$sql = array();
+			
+	    $sql[] = "CREATE TABLE ".MF_TABLE_POSTTYPES_GROUPS." ( 
+        posttype_id int(19) NOT NULL, 
+        group_id int(19) NOT NULL, 
+        sort_order  mediumint(9) DEFAULT 0,
+	      PRIMARY KEY posttype_group (posttype_id,group_id) ) $charset_collate
+	  	";			
+			
+	    $sql[] = "CREATE TABLE ".MF_TABLE_WRITE_PANELS." (
+	      id int(19) NOT NULL AUTO_INCREMENT,
+	      type varchar(20) NOT NULL,
+	      name varchar(50) NOT NULL,
+	      description text,
+	      arguments text,
+	      active tinyint(1) DEFAULT 1,
+	      PRIMARY KEY id (id), UNIQUE KEY type (type) ) $charset_collate
+	    ";
+
+	    $sql[] = "CREATE TABLE ".MF_TABLE_WRITE_PANELS_GROUPS." ( 
+        write_panel_id int(19) NOT NULL, 
+        group_id int(19) NOT NULL, 
+        sort_order  mediumint(9) DEFAULT 0,
+	      PRIMARY KEY write_panel_group (write_panel_id,group_id) ) $charset_collate
+	  	";
+	  	dbDelta($sql);
+						
+			$wpdb->query("ALTER TABLE ".MF_TABLE_POSTTYPES." ADD _builtin tinyint(1) DEFAULT 0");
+
+			$indexes = $wpdb->get_col("SHOW INDEX FROM ".MF_TABLE_POSTTYPES, 2);
+			if (!in_array("type", $indexes))
+				$wpdb->query("ALTER TABLE ".MF_TABLE_POSTTYPES." ADD UNIQUE (`type`)");
+
+			$wpdb->query("INSERT INTO ".MF_TABLE_POSTTYPES." (type, name, active, _builtin) VALUES ('post', 'Post', 1, 1), ('page', 'Page', 1, 1)");
+			
+      // Switching over to id based table relationships (DON'T EVER DO IT ANY OTHER WAY)
+      $post_types = $wpdb->get_results("SELECT id, type FROM ".MF_TABLE_POSTTYPES);
+      $groups = $wpdb->get_results("SELECT * FROM ".MF_TABLE_CUSTOM_GROUPS);
+      $fields = $wpdb->get_results("SELECT * FROM ".MF_TABLE_CUSTOM_FIELDS);
+      $post_keys = array();
+      foreach ((array)$post_types as $post_type) {
+        $post_keys[$post_type->type] = $post_type->id;
+      }
+      
+			// DB support for nested groups
+      $wpdb->query("ALTER TABLE ".MF_TABLE_CUSTOM_GROUPS." ADD parent_id INT( 19 ) NOT NULL DEFAULT '0' AFTER id");
+      foreach ((array)$groups as $group) {
+      	if ($group->post_type == "") continue;
+        if (key_exists($group->post_type,$post_keys)) {
+          $group->post_type_id = $post_keys[$group->post_type];
+          $wpdb->query("INSERT INTO ".MF_TABLE_POSTTYPES_GROUPS." (posttype_id, group_id) VALUES ({$group->post_type_id},{$group->id})");
+        }
+      }
+      $wpdb->query("ALTER TABLE ".MF_TABLE_CUSTOM_GROUPS." DROP post_type");
+      
+
+      // Takes care of misspelled required_field
+      $wpdb->query("ALTER TABLE ".MF_TABLE_CUSTOM_FIELDS." CHANGE requiered_field required_field TINYINT( 1 ) NULL DEFAULT NULL");
+      $wpdb->query("ALTER TABLE ".MF_TABLE_CUSTOM_FIELDS." DROP post_type");
+      $wpdb->query("ALTER TABLE ".MF_TABLE_CUSTOM_FIELDS." DROP post_type_id");
+		}
     //update of DB WHERE
     // use MF_DB_VERSION
 
